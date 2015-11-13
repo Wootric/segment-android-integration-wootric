@@ -8,7 +8,14 @@ import com.segment.analytics.Traits;
 import com.segment.analytics.ValueMap;
 import com.segment.analytics.integrations.IdentifyPayload;
 import com.segment.analytics.integrations.Integration;
+import com.segment.analytics.internal.Utils;
 import com.wootric.androidsdk.Wootric;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+
+import static com.segment.analytics.internal.Utils.isNullOrEmpty;
 
 /**
  * Created by maciejwitowski on 11/4/15.
@@ -33,10 +40,14 @@ public class WootricIntegration extends Integration<Wootric> {
 
     private static final String WOOTRIC_KEY = "Wootric";
 
-    Wootric wootric;
     final String clientId;
     final String clientSecret;
     final String accountToken;
+
+    Wootric wootric;
+    String endUserEmail;
+    long endUserCreatedAt = -1;
+    HashMap<String, String> endUserProperties;
 
     public WootricIntegration(String clientId, String clientSecret, String accountToken) {
         this.clientId = clientId;
@@ -48,6 +59,7 @@ public class WootricIntegration extends Integration<Wootric> {
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         super.onActivityCreated(activity, savedInstanceState);
         wootric = Wootric.init(activity, clientId, clientSecret, accountToken);
+        updateEndUserAttributes();
     }
 
     @Override
@@ -61,7 +73,34 @@ public class WootricIntegration extends Integration<Wootric> {
 
         Traits traits = identify.traits();
 
-        String email = traits.email();
-        wootric.setEndUserEmail(email);
+        endUserEmail = traits.email();
+        endUserCreatedAt = dateToLong(traits.createdAt());
+
+        endUserProperties = (HashMap<String, String>) traits.toStringMap();
+        endUserProperties.remove("email");
+        endUserProperties.remove("createdAt");
+
+        if(wootric != null) {
+            updateEndUserAttributes();
+        }
+    }
+
+    private void updateEndUserAttributes() {
+        wootric.setEndUserEmail(endUserEmail);
+        wootric.setEndUserCreatedAt(endUserCreatedAt);
+        wootric.setProperties(endUserProperties);
+    }
+
+    private long dateToLong(String dateString) {
+        if(isNullOrEmpty(dateString)) {
+            return -1;
+        }
+
+        try {
+            Date date = Utils.toISO8601Date(dateString);
+            return date.getTime();
+        } catch (ParseException e) {
+            return Long.valueOf(dateString);
+        }
     }
 }

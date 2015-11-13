@@ -19,6 +19,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Date;
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -73,8 +76,27 @@ public class WootricTest {
 
     @Test public void identify() {
         integration.wootric = mock(Wootric.class);
+
+        Long timeNow = new Date().getTime();
+        Traits traits = new Traits();
+        traits.putEmail("nps@example.com");
+        traits.putCreatedAt(timeNow.toString());
+        traits.put("company", "wootric");
+        traits.put("plan", "basic");
+
         integration.identify(new IdentifyPayloadBuilder()
-                .traits(new Traits().putEmail("nps@example.com")).build());
+                .traits(traits)
+                .build());
+
+        assertThat(integration.endUserEmail).isEqualTo("nps@example.com");
+        assertThat(integration.endUserCreatedAt).isEqualTo(timeNow);
+
+        HashMap properties = integration.endUserProperties;
+        assertThat(properties.get("company")).isEqualTo("wootric");
+        assertThat(properties.get("plan")).isEqualTo("basic");
+
         verify(integration.wootric).setEndUserEmail("nps@example.com");
+        verify(integration.wootric).setEndUserCreatedAt(timeNow);
+        verify(integration.wootric).setProperties(properties);
     }
 }

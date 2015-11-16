@@ -26,6 +26,19 @@ android {
   }
 }
 
+allprojects {
+  version = VERSION_NAME
+  group = GROUP
+
+  repositories {
+    mavenCentral()
+  }
+}
+
+def isReleaseBuild() {
+  return version.contains("SNAPSHOT") == false
+}
+
 dependencies {
   repositories {
     mavenCentral()
@@ -54,3 +67,5 @@ dependencies {
   testCompile 'org.powermock:powermock-api-mockito:1.6.2'
   testCompile 'org.powermock:powermock-classloading-xstream:1.6.2'
 }
+
+apply from: 'maven_push.gradle'

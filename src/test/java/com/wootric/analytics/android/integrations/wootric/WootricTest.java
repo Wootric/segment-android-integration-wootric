@@ -1,4 +1,4 @@
-package com.segment.analytics.android.integrations.wootric;
+package com.wootric.analytics.android.integrations.wootric;
 
 import android.app.Activity;
 import android.content.Context;

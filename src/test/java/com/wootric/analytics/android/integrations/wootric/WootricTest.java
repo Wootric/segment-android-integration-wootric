@@ -71,7 +71,7 @@ public class WootricTest {
         when(activity.getApplicationContext()).thenReturn(context);
 
         integration.onActivityCreated(activity, bundle);
-        assertThat(integration.wootric).isEqualTo(Wootric.get());
+        assertThat(integration.wootric).isEqualTo(Wootric.init(activity, "", "", ""));
     }
 
     @Test public void identify() {

@@ -1,24 +1,99 @@
-segment-android-integration-wootric
-======================================
+Wootric integration for [analytics-android](https://github.com/segmentio/analytics-android).
 
+## Installation
+This library is distributed as Android library project so it can be included by referencing it as a library project.
+
+If you use Maven, you can include this library as a dependency:
+
+```xml
+<dependency>
+    <groupId>com.wootric</groupId>
+    <artifactId>analytics-integration-wootric</artifactId>
+    <version>0.1.2</version>
+</dependency>
+```
+
+For Gradle users:
+
+```groovy
+compile 'com.wootric:analytics-integration-wootric:0.1.2'
+```
+
+It is also assumed that Segment's android analytics is available. The latest version can be added as dependency this way:
+
+```groovy
+dependencies {
+  repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+  }
+
+  compile 'com.segment.analytics.android:analytics:4.0.0-SNAPSHOT'
+}
+```
+
+## Usage
+
+(It is advised to read [WootricSDK docs](https://github.com/Wootric/WootricSDK-Android) first.)
+
+Analytics object should be initialized in the Application class, specifying that the WootricIntegration should be user.
+
+```java
+import com.segment.analytics.Analytics;
+import com.wootric.analytics.android.integrations.wootric.WootricIntegration;
+
+public class MainApplication extends Application {
+
+    Analytics analytics;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        analytics = new Analytics.Builder(this, "write_key")
+                .use(WootricIntegration.FACTORY)
+                .build();
+    }
+
+    public Analytics getAnalytics() {
+        return analytics;
+    }
+}
+```
+
+Afterwards in the activity the Wootric object can be used to set all optional configurations and call `survey()` method.
+
+```java
+
+import com.segment.analytics.Analytics;
+import com.wootric.analytics.android.integrations.wootric.WootricIntegration;
+import com.wootric.androidsdk.Wootric;
+
+public class MainActivity extends Activity {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Analytics analytics = ((MainApplication) getApplication()).getAnalytics();
+        analytics.onIntegrationReady(WootricIntegration.FACTORY.key(), new Analytics.Callback<Wootric>() {
+            @Override
+            public void onReady(Wootric wootric) {
+                // Set all aptional configuration here like:
+                // wootric.setSurveyImmediately(true);
+                // wootric.setLanguageCode("PL");
+                wootric.survey();
+            }
+        });
+    }
+}
+```
 
 ## License
 
 ```
-WWWWWW||WWWWWW
- W W W||W W W
-      ||
-    ( OO )__________
-     /  |           \
-    /o o|    MIT     \
-    \___/||_||__||_|| *
-         || ||  || ||
-        _||_|| _||_||
-       (__|__|(__|__|
-
 The MIT License (MIT)
 
-Copyright (c) 2014 Segment, Inc.
+Copyright (c) 2015 Wootric
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

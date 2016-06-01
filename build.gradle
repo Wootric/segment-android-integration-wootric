@@ -12,7 +12,7 @@ apply plugin: 'com.android.library'
 
 android {
   compileSdkVersion 23
-  buildToolsVersion '23.0.1'
+  buildToolsVersion '23.0.2'
 
   defaultConfig {
     minSdkVersion 14
@@ -45,9 +45,9 @@ dependencies {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 
-  provided 'com.segment.analytics.android:analytics:4.0.3-SNAPSHOT'
+  provided 'com.segment.analytics.android:analytics:4.1.4-SNAPSHOT'
 
-  compile 'com.wootric:wootric-sdk-android:2.1.9'
+  compile 'com.wootric:wootric-sdk-android:2.4.2'
 
   testCompile 'junit:junit:4.12'
   testCompile('org.robolectric:robolectric:3.0') {
@@ -55,7 +55,7 @@ dependencies {
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
 
-  testCompile 'com.segment.analytics.android:analytics-tests:4.0.3-SNAPSHOT'
+  testCompile 'com.segment.analytics.android:analytics-tests:4.1.4-SNAPSHOT'
 
   testCompile 'org.assertj:assertj-core:1.7.1'
 

@@ -9,14 +9,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
     <groupId>com.wootric</groupId>
     <artifactId>analytics-integration-wootric</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
 </dependency>
 ```
 
 For Gradle users:
 
 ```groovy
-compile 'com.wootric:analytics-integration-wootric:0.1.3'
+compile 'com.wootric:analytics-integration-wootric:0.1.4'
 ```
 
 It is also assumed that Segment's android analytics is available. The latest version can be added as dependency this way:
@@ -28,7 +28,7 @@ dependencies {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 
-  compile 'com.segment.analytics.android:analytics:4.0.0-SNAPSHOT'
+  compile 'com.segment.analytics.android:analytics:4.1.4-SNAPSHOT'
 }
 ```
 

@@ -2,6 +2,7 @@ package com.wootric.analytics.android.integrations.wootric;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Traits;
@@ -26,10 +27,9 @@ public class WootricIntegration extends Integration<Wootric> {
         @Override
         public Integration<?> create(ValueMap settings, Analytics analytics) {
             String clientId = settings.getString("clientId");
-            String clientSecret = settings.getString("clientSecret");
             String accountToken = settings.getString("accountToken");
 
-            return new WootricIntegration(clientId, clientSecret, accountToken);
+            return new WootricIntegration(clientId, accountToken);
         }
 
         @Override
@@ -41,7 +41,6 @@ public class WootricIntegration extends Integration<Wootric> {
     private static final String WOOTRIC_KEY = "Wootric";
 
     final String clientId;
-    final String clientSecret;
     final String accountToken;
 
     Wootric wootric;
@@ -49,16 +48,15 @@ public class WootricIntegration extends Integration<Wootric> {
     long endUserCreatedAt = -1;
     HashMap<String, String> endUserProperties;
 
-    public WootricIntegration(String clientId, String clientSecret, String accountToken) {
+    public WootricIntegration(String clientId, String accountToken) {
         this.clientId = clientId;
-        this.clientSecret = clientSecret;
         this.accountToken = accountToken;
     }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         super.onActivityCreated(activity, savedInstanceState);
-        wootric = Wootric.init(activity, clientId, clientSecret, accountToken);
+        wootric = Wootric.init((FragmentActivity) activity, clientId, accountToken);
         updateEndUserAttributes();
     }
 

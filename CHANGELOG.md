@@ -1,3 +1,10 @@
+## 0.1.6 (2018-05-24)
+
+### Changed:
+
+- Update Analytics to version 4.3.1
+- Update WootricSDK to version 2.8.0
+
 ## 0.1.5 (2016-10-19)
 
 ### Changed:

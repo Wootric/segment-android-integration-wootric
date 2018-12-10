@@ -3,6 +3,7 @@ package com.wootric.analytics.android.integrations.wootric;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Traits;
@@ -48,7 +49,7 @@ public class WootricTest {
     @Before
     public void setUp() {
         initMocks(this);
-        integration = new WootricIntegration("client_id", "client_secret", "account_token");
+        integration = new WootricIntegration("client_id", "account_token");
     }
 
     @Test
@@ -62,7 +63,6 @@ public class WootricTest {
 
         assertThat(wootricIntegration.accountToken).isEqualTo("account_token");
         assertThat(wootricIntegration.clientId).isEqualTo("client_id");
-        assertThat(wootricIntegration.clientSecret).isEqualTo("client_secret");
     }
 
     @Test public void activityCreate() {
@@ -71,7 +71,16 @@ public class WootricTest {
         when(activity.getApplicationContext()).thenReturn(context);
 
         integration.onActivityCreated(activity, bundle);
-        assertThat(integration.wootric).isEqualTo(Wootric.init(activity, "", "", ""));
+        assertThat(integration.wootric).isEqualTo(Wootric.init(activity, "",""));
+    }
+
+    @Test public void fragmentActivityCreate() {
+        FragmentActivity fragmentActivity = mock(FragmentActivity.class);
+        Bundle bundle = mock(Bundle.class);
+        when(fragmentActivity.getApplicationContext()).thenReturn(context);
+
+        integration.onActivityCreated(fragmentActivity, bundle);
+        assertThat(integration.wootric).isEqualTo(Wootric.init(fragmentActivity, "",""));
     }
 
     @Test public void identify() {

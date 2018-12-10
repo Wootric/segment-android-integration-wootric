@@ -1,3 +1,10 @@
+## 0.1.7 (2018-12-10)
+
+### Changed:
+
+- Update WootricSDK to version 2.9.0
+- Allow initializing SDK with Activity or FragmentActivity
+
 ## 0.1.6 (2018-05-24)
 
 ### Changed:

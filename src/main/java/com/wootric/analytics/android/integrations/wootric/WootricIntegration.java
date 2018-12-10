@@ -56,7 +56,11 @@ public class WootricIntegration extends Integration<Wootric> {
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         super.onActivityCreated(activity, savedInstanceState);
-        wootric = Wootric.init((FragmentActivity) activity, clientId, accountToken);
+        if (activity instanceof FragmentActivity) {
+            wootric = Wootric.init((FragmentActivity) activity, clientId, accountToken);
+        } else {
+            wootric = Wootric.init(activity, clientId, accountToken);
+        }
         updateEndUserAttributes();
     }
 

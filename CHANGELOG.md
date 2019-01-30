@@ -1,3 +1,10 @@
+## 0.1.8 (2019-02-05)
+
+### Changed:
+
+- Update WootricSDK to version 2.11.0
+- Fix createdAt bug
+
 ## 0.1.7 (2018-12-10)
 
 ### Changed:

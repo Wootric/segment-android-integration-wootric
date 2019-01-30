@@ -8,7 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Traits;
 import com.segment.analytics.ValueMap;
-import com.segment.analytics.test.IdentifyPayloadBuilder;
+import com.segment.analytics.integrations.IdentifyPayload;
+import com.segment.analytics.internal.Utils;
 import com.wootric.androidsdk.Wootric;
 
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,26 +86,26 @@ public class WootricTest {
     @Test public void identify() {
         integration.wootric = mock(Wootric.class);
 
-        Long timeNow = new Date().getTime();
+        String timeNow = "2019-01-31T23:00:00+00:00";
+        Long timeUnixTimestamp = Utils.parseISO8601Date(timeNow).getTime() / 1000;
         Traits traits = new Traits();
         traits.putEmail("nps@example.com");
-        traits.putCreatedAt(timeNow.toString());
+        traits.putCreatedAt(timeNow);
         traits.put("company", "wootric");
         traits.put("plan", "basic");
 
-        integration.identify(new IdentifyPayloadBuilder()
-                .traits(traits)
-                .build());
+        integration.identify(new IdentifyPayload.Builder().userId("user_id").traits(traits).build());
+
 
         assertThat(integration.endUserEmail).isEqualTo("nps@example.com");
-        assertThat(integration.endUserCreatedAt).isEqualTo(timeNow);
+        assertThat(integration.endUserCreatedAt).isEqualTo(timeUnixTimestamp);
 
         HashMap properties = integration.endUserProperties;
         assertThat(properties.get("company")).isEqualTo("wootric");
         assertThat(properties.get("plan")).isEqualTo("basic");
 
         verify(integration.wootric).setEndUserEmail("nps@example.com");
-        verify(integration.wootric).setEndUserCreatedAt(timeNow);
+        verify(integration.wootric).setEndUserCreatedAt(timeUnixTimestamp);
         verify(integration.wootric).setProperties(properties);
     }
 }

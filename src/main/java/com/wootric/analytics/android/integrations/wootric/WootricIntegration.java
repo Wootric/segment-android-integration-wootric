@@ -12,7 +12,6 @@ import com.segment.analytics.integrations.Integration;
 import com.segment.analytics.internal.Utils;
 import com.wootric.androidsdk.Wootric;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -99,9 +98,9 @@ public class WootricIntegration extends Integration<Wootric> {
         }
 
         try {
-            Date date = Utils.toISO8601Date(dateString);
-            return date.getTime();
-        } catch (ParseException e) {
+            Date date = Utils.parseISO8601Date(dateString);
+            return date.getTime() / 1000;
+        } catch (Exception e) {
             return Long.valueOf(dateString);
         }
     }

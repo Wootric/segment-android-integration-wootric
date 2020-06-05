@@ -1,3 +1,10 @@
+## 0.2.0 (2020-08-17)
+
+### Changed:
+
+- Update WootricSDK version
+- Add support for track()
+
 ## 0.1.8 (2019-02-05)
 
 ### Changed:

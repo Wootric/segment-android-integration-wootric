@@ -2,13 +2,16 @@ package com.wootric.analytics.android.integrations.wootric;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Window;
 
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Traits;
 import com.segment.analytics.ValueMap;
 import com.segment.analytics.integrations.IdentifyPayload;
+import com.segment.analytics.integrations.TrackPayload;
 import com.segment.analytics.internal.Utils;
 import com.wootric.androidsdk.Wootric;
 
@@ -18,8 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.HashMap;
 
@@ -33,8 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Created by maciejwitowski on 11/4/15.
  */
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 18, manifest = Config.NONE)
+@RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
 @PrepareForTest(Wootric.class)
 public class WootricTest {
@@ -43,44 +44,50 @@ public class WootricTest {
     Analytics analytics;
     @Mock Wootric wootric;
     @Mock Context context;
+    @Mock Resources mResources;
+    @Mock FragmentActivity mFragmentActivity;
+    @Mock Window mWindow;
 
     WootricIntegration integration;
 
     @Before
     public void setUp() {
         initMocks(this);
-        integration = new WootricIntegration("client_id", "account_token");
+        integration = new WootricIntegration("account_token");
     }
 
     @Test
     public void factory() {
-        ValueMap settings = new ValueMap().putValue("clientId", "client_id")
-                .putValue("clientSecret", "client_secret")
-                .putValue("accountToken", "account_token");
+        ValueMap settings = new ValueMap().putValue("accountToken", "account_token");
 
         WootricIntegration wootricIntegration =
                 (WootricIntegration) WootricIntegration.FACTORY.create(settings, analytics);
 
         assertThat(wootricIntegration.accountToken).isEqualTo("account_token");
-        assertThat(wootricIntegration.clientId).isEqualTo("client_id");
     }
 
     @Test public void activityCreate() {
         Activity activity = mock(Activity.class);
         Bundle bundle = mock(Bundle.class);
+        when(mResources.getBoolean(R.bool.isTablet)).thenReturn(true);
+        when(activity.getResources()).thenReturn(mResources);
+        when(activity.getWindow()).thenReturn(mWindow);
         when(activity.getApplicationContext()).thenReturn(context);
 
         integration.onActivityCreated(activity, bundle);
-        assertThat(integration.wootric).isEqualTo(Wootric.init(activity, "",""));
+        assertThat(integration.wootric).isEqualTo(Wootric.init(activity, ""));
     }
 
     @Test public void fragmentActivityCreate() {
         FragmentActivity fragmentActivity = mock(FragmentActivity.class);
         Bundle bundle = mock(Bundle.class);
+        when(mResources.getBoolean(R.bool.isTablet)).thenReturn(true);
+        when(fragmentActivity.getResources()).thenReturn(mResources);
+        when(fragmentActivity.getWindow()).thenReturn(mWindow);
         when(fragmentActivity.getApplicationContext()).thenReturn(context);
 
         integration.onActivityCreated(fragmentActivity, bundle);
-        assertThat(integration.wootric).isEqualTo(Wootric.init(fragmentActivity, "",""));
+        assertThat(integration.wootric).isEqualTo(Wootric.init(fragmentActivity, ""));
     }
 
     @Test public void identify() {
@@ -107,5 +114,13 @@ public class WootricTest {
         verify(integration.wootric).setEndUserEmail("nps@example.com");
         verify(integration.wootric).setEndUserCreatedAt(timeUnixTimestamp);
         verify(integration.wootric).setProperties(properties);
+    }
+
+    @Test public void track() {
+        integration.wootric = mock(Wootric.class);
+
+        integration.track((new TrackPayload.Builder()).anonymousId("1234").event("On click").build());
+
+        assertThat(integration.eventName).isEqualTo("On click");
     }
 }

@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.segment.analytics.Analytics;
+import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
 import com.segment.analytics.ValueMap;
 import com.segment.analytics.integrations.IdentifyPayload;
 import com.segment.analytics.integrations.Integration;
+import com.segment.analytics.integrations.TrackPayload;
 import com.segment.analytics.internal.Utils;
 import com.wootric.androidsdk.Wootric;
 
@@ -25,10 +27,9 @@ public class WootricIntegration extends Integration<Wootric> {
     public static final Factory FACTORY = new Integration.Factory() {
         @Override
         public Integration<?> create(ValueMap settings, Analytics analytics) {
-            String clientId = settings.getString("clientId");
             String accountToken = settings.getString("accountToken");
 
-            return new WootricIntegration(clientId, accountToken);
+            return new WootricIntegration(accountToken);
         }
 
         @Override
@@ -39,16 +40,15 @@ public class WootricIntegration extends Integration<Wootric> {
 
     private static final String WOOTRIC_KEY = "Wootric";
 
-    final String clientId;
     final String accountToken;
 
     Wootric wootric;
     String endUserEmail;
+    String eventName;
     long endUserCreatedAt = -1;
     HashMap<String, String> endUserProperties;
 
-    public WootricIntegration(String clientId, String accountToken) {
-        this.clientId = clientId;
+    public WootricIntegration(String accountToken) {
         this.accountToken = accountToken;
     }
 
@@ -56,9 +56,9 @@ public class WootricIntegration extends Integration<Wootric> {
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         super.onActivityCreated(activity, savedInstanceState);
         if (activity instanceof FragmentActivity) {
-            wootric = Wootric.init((FragmentActivity) activity, clientId, accountToken);
+            wootric = Wootric.init((FragmentActivity) activity, accountToken);
         } else {
-            wootric = Wootric.init(activity, clientId, accountToken);
+            wootric = Wootric.init(activity, accountToken);
         }
         updateEndUserAttributes();
     }
@@ -84,6 +84,29 @@ public class WootricIntegration extends Integration<Wootric> {
         if(wootric != null) {
             updateEndUserAttributes();
         }
+    }
+
+    @Override
+    public void track(TrackPayload track) {
+        Properties properties = track.properties();
+        this.eventName = track.event();
+        String language = properties.getString("language");
+
+        if (endUserProperties == null) {
+            endUserProperties = (HashMap<String, String>) properties.toStringMap();
+        } else {
+            endUserProperties.putAll(properties.toStringMap());
+        }
+
+        if (language != null) {
+            wootric.setLanguageCode(language);
+        }
+
+        if(wootric != null) {
+            wootric.setEventName(this.eventName);
+            updateEndUserAttributes();
+        }
+
     }
 
     private void updateEndUserAttributes() {

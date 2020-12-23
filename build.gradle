@@ -58,7 +58,9 @@ dependencies {
 
   compileOnly 'com.segment.analytics.android:analytics:4.7.1'
 
-  implementation 'com.wootric:wootric-sdk-android:2.+'
+  //  implementation 'com.wootric:wootric-sdk-android:2.18.1'
+  implementation 'com.github.Wootric:WootricSDK-Android:43358feada570aa0b15f43d342682c7d37c51f61'
+
   //noinspection GradleCompatible
   implementation 'com.android.support:appcompat-v7:26.1.0'
 
